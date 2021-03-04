@@ -12,10 +12,10 @@ const port = process.env.PORT || 9000;
 // Fix For Routing Issue
 
 const pusher = new Pusher({
-  appId: "1165586",
-  key: "92ab600f6d7ee54b0feb",
-  secret: "b534a373c11f3d66b95b",
-  cluster: "mt1",
+  appId: "",
+  key: "",
+  secret: "",
+  cluster: "",
   useTLS: true,
 });
 
