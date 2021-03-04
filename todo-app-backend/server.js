@@ -1,0 +1,123 @@
+// imports
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import mongoData from "./mongoData.js";
+import Pusher from "pusher";
+
+// App config
+const app = express();
+const port = process.env.PORT || 9000;
+
+// Fix For Routing Issue
+
+const pusher = new Pusher({
+  appId: "1165586",
+  key: "92ab600f6d7ee54b0feb",
+  secret: "b534a373c11f3d66b95b",
+  cluster: "mt1",
+  useTLS: true,
+});
+
+// Middlewares
+app.use(express.json());
+app.use(cors());
+
+// DB config
+const mongoURI =
+  "mongodb+srv://barty:D3Ece71c8sM7nJ1p@cluster0.j4m6w.mongodb.net/ToDoApp?retryWrites=true&w=majority";
+mongoose.connect(mongoURI, {
+  useCreateIndex: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+mongoose.connection.once("open", () => {
+  console.log("DB Connected");
+
+  const changeStream = mongoose.connection.collection("todos").watch();
+
+  changeStream.on("change", (change) => {
+    if (change.operationType === "insert") {
+      pusher.trigger("todos", "newTodo", change.fullDocument);
+      console.log("Added");
+    } else if (change.operationType === "delete") {
+      pusher.trigger("todos", "deleteTodo", {});
+      console.log("Deleted");
+    } else if (change.operationType === "update") {
+      pusher.trigger("todos", "updateTodo", {});
+      console.log("Updated");
+    } else {
+      console.log("Error triggering pusher");
+    }
+  });
+});
+
+// API routes
+app.get("/", (req, res) => res.status(200).send("Hello World!!"));
+
+// Add new ToDo
+app.post("/new/todo", async (req, res) => {
+  const dbData = req.body;
+  await mongoData.create(dbData, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(data);
+    }
+  });
+});
+
+// Get all ToDo
+app.get("/get/todo", async (req, res) => {
+  await mongoData
+    .find()
+    .sort({
+      timestamp: 1,
+    })
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Delete a specific ToDo
+app.get("/delete/todo", async (req, res) => {
+  const id = req.query.id;
+  await mongoData.deleteOne(
+    {
+      _id: id,
+    },
+    (err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).send(data);
+      }
+    }
+  );
+});
+
+// Update a ToDo
+app.post("/update/todo", async (req, res) => {
+  const dbData = req.body;
+
+  await mongoData.updateOne(
+    {
+      _id: dbData.id,
+    },
+    { $set: dbData },
+    (err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).send(data);
+      }
+    }
+  );
+});
+
+// Linstening
+app.listen(port, () => console.log(`Listening on localhost:${port}`));

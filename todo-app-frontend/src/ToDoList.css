@@ -1,0 +1,22 @@
+.toDoList_item {
+  background-color: wheat;
+  display: flex;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.expired {
+  background-color: red;
+  color: white;
+}
+
+.updateForm {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.updateForm_title {
+  padding-bottom: 20px;
+  text-align: center;
+}

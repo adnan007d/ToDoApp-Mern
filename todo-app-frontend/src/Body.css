@@ -1,0 +1,21 @@
+.body {
+  overflow-y: auto;
+  background-color: lightgray;
+}
+.body_input {
+  display: flex;
+  padding: 30px;
+  justify-content: center;
+}
+
+.body_list {
+  width: 80vw;
+  padding: 20px;
+  min-width: 300px;
+}
+
+.body_input > form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
