@@ -24,8 +24,7 @@ app.use(express.json());
 app.use(cors());
 
 // DB config
-const mongoURI =
-  "mongodb+srv://barty:D3Ece71c8sM7nJ1p@cluster0.j4m6w.mongodb.net/ToDoApp?retryWrites=true&w=majority";
+const mongoURI = "";
 mongoose.connect(mongoURI, {
   useCreateIndex: true,
   useNewUrlParser: true,
