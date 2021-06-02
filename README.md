@@ -1,4 +1,4 @@
 # ToDoApp-Mern
-https://todo-mern-d556d.web.app/
+https://todo-mern.web.app/
 
 To Do App with MERN Stack
